@@ -1,0 +1,22 @@
+<div>
+<input [(ngModel)]="nouveauNavire.nom" placeholder="Nom">
+<input [(ngModel)]="nouveauNavire.type" placeholder="type">
+<input [(ngModel)]="nouveauNavire.latitude" placeholder="latitude">
+<input [(ngModel)]="nouveauNavire.longitude" placeholder="longitude">
+<input [(ngModel)]="nouveauNavire.statut" placeholder="statut">
+
+<button (click)="ajouter()">ajouter</button>
+</div>
+@for (navire of navires(); track navire.id) {
+    <div>
+        {{ navire.type }} 
+        {{ navire.nom }}
+        est
+        {{ navire.statut }}
+        en
+        {{ navire.latitude }} | {{ navire.longitude }}
+        ( {{ navire.id }} )
+    </div>
+    <button (click)="supprimer(navire.id)">Supprimer</button>
+
+}
