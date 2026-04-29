@@ -1,22 +1,62 @@
-<div>
-<input [(ngModel)]="nouveauNavire.nom" placeholder="Nom">
-<input [(ngModel)]="nouveauNavire.type" placeholder="type">
-<input [(ngModel)]="nouveauNavire.latitude" placeholder="latitude">
-<input [(ngModel)]="nouveauNavire.longitude" placeholder="longitude">
-<input [(ngModel)]="nouveauNavire.statut" placeholder="statut">
+<div class="container">
 
-<button (click)="ajouter()">ajouter</button>
-</div>
-@for (navire of navires(); track navire.id) {
-    <div>
-        {{ navire.type }} 
-        {{ navire.nom }}
-        est
-        {{ navire.statut }}
-        en
-        {{ navire.latitude }} | {{ navire.longitude }}
-        ( {{ navire.id }} )
+  <!-- TOOLBAR -->
+  <div class="toolbar">
+    <h1>NAVAL TRACKER</h1>
+    <button (click)="toggleFormulaire()">+ AJOUTER</button>
+    <button (click)="supprimerSelectionne()" >- SUPPRIMER</button>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-panel">
+    <h2>STATISTIQUES</h2>
+    <div class="stat-item">
+      <span>TOTAL</span>
+      <span class="stat-value">{{ navires().length }}</span>
     </div>
-    <button (click)="supprimer(navire.id)">Supprimer</button>
+    <div class="stat-item">
+      <span>EN MISSION</span>
+      <span class="status-en-mission">{{ compterParStatut('en mission') }}</span>
+    </div>
+    <div class="stat-item">
+      <span>AU PORT</span>
+      <span class="status-au-port">{{ compterParStatut('au port') }}</span>
+    </div>
+    <div class="stat-item">
+      <span>EN ALERTE</span>
+      <span class="status-en-alerte">{{ compterParStatut('en alerte') }}</span>
+    </div>
+    <div class="stat-item">
+      <span>EN MER</span>
+      <span class="status-en-mer">{{ compterParStatut('en mer') }}</span>
+    </div>
 
-}
+    <h2>UNITES</h2>
+    @for (navire of navires(); track navire.id) {
+      <div class="stat-item" (click)="selectionner(navire)" style="cursor:pointer">
+        <span [class]="'status-' + navire.statut.replace(' ', '-')">{{ navire.nom }}</span>
+        <span style="font-size:10px">{{ navire.type }}</span>
+      </div>
+    }
+  </div>
+
+  <!-- CARTE -->
+  <div class="map-area">
+    <div id="map"></div>
+
+    <!-- FORMULAIRE AJOUT -->
+    @if (afficherFormulaire()) {
+      <div class="form-overlay">
+        <h2 style="font-size:12px; letter-spacing:3px">NOUVELLE UNITE</h2>
+        <input [(ngModel)]="nouveauNavire.nom" placeholder="NOM">
+        <input [(ngModel)]="nouveauNavire.type" placeholder="TYPE">
+        <input [(ngModel)]="nouveauNavire.latitude" placeholder="LATITUDE" type="number">
+        <input [(ngModel)]="nouveauNavire.longitude" placeholder="LONGITUDE" type="number">
+        <input [(ngModel)]="nouveauNavire.statut" placeholder="STATUT">
+        <button (click)="ajouter()">CONFIRMER</button>
+        <button (click)="toggleFormulaire()">ANNULER</button>
+      </div>
+    }
+  </div>
+
+</div>

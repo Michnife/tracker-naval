@@ -32,8 +32,8 @@ export class NavireService {
     return this.http.get<Navire[]>(this.apiUrl);
   }
 
-  ajouter(navire: NavireRequest): Observable<NavireRequest> {
-    return this.http.post<NavireRequest>(this.apiUrl, navire);
+  ajouter(navire: NavireRequest): Observable<Navire> {
+      return this.http.post<Navire>(this.apiUrl, navire);
   }
 
   supprimer(id: string): Observable<string> {
