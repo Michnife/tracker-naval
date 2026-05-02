@@ -1,24 +1,35 @@
 .container {
     display: grid;
-    grid-template-rows: 60px 1fr;
+    grid-template-rows: 30px 35px 1fr;
     grid-template-columns: 250px 1fr;
     height: 100vh;
 }
 
-.toolbar {
+.namebar {
     grid-column: 1 / -1;
-    background-color: #1c1d1c;
+    background-color: #050f05;
     border-bottom: 1px solid #bcbcbc;
     display: flex;
     align-items: center;
     padding: 0 20px;
-    gap: 20px;
+    height: 40px;
 }
 
-.toolbar h1 {
-    font-size: 18px;
-    letter-spacing: 4px;
+.namebar h1 {
+    font-size: 16px;
+    letter-spacing: 6px;
     color: #bcbcbc;
+}
+
+.toolbar {
+    grid-column: 1 / -1;
+    background-color: #0a0a0a;
+    border-bottom: 1px solid #bcbcbc;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 10px;
+    height: 35px;
 }
 
 .toolbar button {
@@ -107,4 +118,14 @@
 
 .form-overlay input::placeholder {
     color: #bcbcbc;
+}
+
+.form-overlay button {
+    padding: 4px;
+    width: 48%;
+    font-family: 'Share Tech Mono', monospace;
+    background: #1c1d1c;
+    color: #bcbcbc;
+    border: 1px solid #bcbcbc;
+
 }

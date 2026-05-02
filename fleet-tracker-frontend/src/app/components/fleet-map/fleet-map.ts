@@ -68,9 +68,16 @@ export class FleetMap implements OnInit {
             iconAnchor: [17, 17]
         });
 
-        const marqueur  = L.marker([navire.latitude, navire.longitude], { icon })
+        const marqueur = L.marker([navire.latitude, navire.longitude], { icon })
             .addTo(this.map!)
-            .bindPopup(navire.nom);
+            .bindPopup(`
+                <div>
+                    <b>${navire.nom}</b><br>
+                    Type : ${navire.type}<br>
+                    Statut : ${navire.statut}<br>
+                    Position : ${navire.latitude} | ${navire.longitude}
+                </div>
+            `);
         this.marqueurs[navire.id] = marqueur;
     }
 

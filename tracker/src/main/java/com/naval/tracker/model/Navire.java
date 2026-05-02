@@ -1,4 +1,5 @@
 package com.naval.tracker.model;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 @Entity
@@ -15,15 +16,29 @@ public class Navire {
     private double longitude;
     private String statut;    // "en mission", "au port", "en alerte"
 
+    @ManyToOne
+    @JoinColumn(name = "groupe_id")
+    @JsonIgnoreProperties({"navires", "sousGroupes"})
+    private Groupe groupe;
+
+    public Groupe getGroupe() {
+        return groupe;
+    }
+
+    public void setGroupe(Groupe groupe) {
+        this.groupe = groupe;
+    }
+
     public Navire() {}
 
-    public Navire(String id, String nom, String type, double latitude, double longitude, String statut) {
+    public Navire(String id, String nom, String type, double latitude, double longitude, String statut, Groupe groupe) {
         this.id = id;
         this.nom = nom;
         this.type = type;
         this.latitude = latitude;
         this.longitude = longitude;
         this.statut = statut;
+        this.groupe = groupe;
     }
 
     public String getId() { return id; }

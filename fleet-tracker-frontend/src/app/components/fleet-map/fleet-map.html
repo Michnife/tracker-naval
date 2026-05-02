@@ -1,35 +1,15 @@
 <div class="container">
 
   <!-- TOOLBAR -->
-  <div class="toolbar">
+  <div class="namebar">
     <h1>NAVAL TRACKER</h1>
+  </div>
+  <div class="toolbar">
     <button (click)="toggleFormulaire()">+ AJOUTER</button>
     <button (click)="supprimerSelectionne()" >- SUPPRIMER</button>
   </div>
-
   <!-- STATS -->
   <div class="stats-panel">
-    <h2>STATISTIQUES</h2>
-    <div class="stat-item">
-      <span>TOTAL</span>
-      <span class="stat-value">{{ navires().length }}</span>
-    </div>
-    <div class="stat-item">
-      <span>EN MISSION</span>
-      <span class="status-en-mission">{{ compterParStatut('en mission') }}</span>
-    </div>
-    <div class="stat-item">
-      <span>AU PORT</span>
-      <span class="status-au-port">{{ compterParStatut('au port') }}</span>
-    </div>
-    <div class="stat-item">
-      <span>EN ALERTE</span>
-      <span class="status-en-alerte">{{ compterParStatut('en alerte') }}</span>
-    </div>
-    <div class="stat-item">
-      <span>EN MER</span>
-      <span class="status-en-mer">{{ compterParStatut('en mer') }}</span>
-    </div>
 
     <h2>UNITES</h2>
     @for (navire of navires(); track navire.id) {
@@ -53,8 +33,8 @@
         <input [(ngModel)]="nouveauNavire.latitude" placeholder="LATITUDE" type="number">
         <input [(ngModel)]="nouveauNavire.longitude" placeholder="LONGITUDE" type="number">
         <input [(ngModel)]="nouveauNavire.statut" placeholder="STATUT">
-        <button (click)="ajouter()">CONFIRMER</button>
-        <button (click)="toggleFormulaire()">ANNULER</button>
+        <div style="display:flex; gap:8px;"> <button (click)="ajouter()">CONFIRMER</button>  <button (click)="toggleFormulaire()">SUPPRIMER</button> </div>
+
       </div>
     }
   </div>
