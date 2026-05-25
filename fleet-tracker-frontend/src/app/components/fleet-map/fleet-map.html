@@ -1,42 +1,447 @@
-<div class="container">
+<div class="app">
 
-  <!-- TOOLBAR -->
-  <div class="namebar">
-    <h1>NAVAL TRACKER</h1>
+  <div class="title">
+    <div class="crest" title="Naval COP"></div>
+    <span><b style="color:var(--txt)">NAVAL TRACKER</b> · Maritime Command &amp; Control</span>
   </div>
-  <div class="toolbar">
-    <button (click)="toggleFormulaire()">+ AJOUTER</button>
-    <button (click)="supprimerSelectionne()" >- SUPPRIMER</button>
-  </div>
-  <!-- STATS -->
-  <div class="stats-panel">
 
-    <h2>UNITES</h2>
-    @for (navire of navires(); track navire.id) {
-      <div class="stat-item" (click)="selectionner(navire)" style="cursor:pointer">
-        <span [class]="'status-' + navire.statut.replace(' ', '-')">{{ navire.nom }}</span>
-        <span style="font-size:10px">{{ navire.type }}</span>
+  <div class="menu">
+    <div class="brand">
+      <span class="mark">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M10 1 L18 5 L18 11 C18 15 14 18 10 19 C6 18 2 15 2 11 L2 5 Z"
+                stroke="var(--frnd)" stroke-width="1.4" fill="rgba(62,209,195,.08)"/>
+          <path d="M10 5 L10 14 M7 8 L13 8" stroke="var(--frnd)" stroke-width="1.4"/>
+        </svg>
+      </span>
+      <span>NAVAL<small> / COP</small></span>
+    </div>
+    <nav>
+      <a class="on">Opérations</a>
+      <a>Pistes</a>
+      <a>Missions</a>
+      <a>Planification</a>
+      <a>Capteurs</a>
+      <a>Comms</a>
+      <a>Renseignement</a>
+      <a>Rapports</a>
+    </nav>
+    <div class="spacer"></div>
+    <div class="nav-right">
+      <span>ZULU</span>
+      <span class="clock">{{ clockStr() }}</span>
+    </div>
+  </div>
+
+  <div class="tools">
+    <div class="grp">
+      <button class="btn on" title="Sélectionner">
+        <svg class="ico" viewBox="0 0 16 16"><path d="M3 2l9 5-4 1 3 5-2 1-3-5-3 3z" fill="currentColor"/></svg>
+      </button>
+      <button class="btn" title="Panoramique">
+        <svg class="ico" viewBox="0 0 16 16"><path d="M8 1v6m0 2v6M1 8h6m2 0h6" stroke="currentColor" stroke-width="1.2" fill="none"/></svg>
+      </button>
+      <button class="btn" title="Mesurer">
+        <svg class="ico" viewBox="0 0 16 16"><path d="M2 11l9-9 3 3-9 9zM4 11l1 1M6 9l1 1M8 7l1 1" stroke="currentColor" stroke-width="1.1" fill="none"/></svg>
+      </button>
+    </div>
+    <div class="grp">
+      <button class="btn" title="Zoom avant">+</button>
+      <button class="btn" title="Zoom arrière">−</button>
+      <button class="btn" title="Ajuster la vue">FIT</button>
+    </div>
+    <div class="grp">
+      <button class="btn on" title="Pistes">TRK</button>
+      <button class="btn on" title="Calques">LYR</button>
+      <button class="btn" title="Météo">WX</button>
+      <button class="btn" title="Bathymétrie">BAT</button>
+    </div>
+    <div class="grp">
+      <button class="btn on" (click)="toggleFormulaire()" title="Ajouter une unité">
+        <svg class="ico" viewBox="0 0 16 16"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>
+      </button>
+      <button class="btn danger" (click)="supprimerSelectionne()" title="Supprimer l'unité sélectionnée">
+        <svg class="ico" viewBox="0 0 16 16"><path d="M2 8h12" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>
+      </button>
+      <button class="btn" (click)="toggleFormulaireGroupe()" title="Créer un groupe">
+        <svg class="ico" viewBox="0 0 16 16"><path d="M2 4h12v2H2z M2 10h7v2H2z M11 10v6M8 13h6" stroke="currentColor" stroke-width="1.1" fill="none"/></svg>
+        GROUPE
+      </button>
+    </div>
+  </div>
+
+  <div class="left">
+    <div class="pane-tabs">
+      <div class="t" [class.on]="activeLeftTab() === 'LAYERS'" (click)="setLeftTab('LAYERS')">CALQUES</div>
+      <div class="t" [class.on]="activeLeftTab() === 'UNITS'" (click)="setLeftTab('UNITS')">UNITÉS</div>
+      <div class="t" [class.on]="activeLeftTab() === 'PLANS'" (click)="setLeftTab('PLANS')">PLANS</div>
+    </div>
+
+    @if (activeLeftTab() === 'LAYERS') {
+      <div class="pane-h">
+        <span>Image tactique</span>
+        <span class="acts"><span>tout activer</span></span>
+      </div>
+      <div class="scroll">
+        <div class="tree">
+          <div class="node on"><span class="chev">▾</span><span class="chk"></span><span class="lbl"><b>IMAGE TACTIQUE</b></span><span class="cnt">{{ navires().length }}</span></div>
+          <div class="child">
+            <div class="node on"><span class="chev">▾</span><span class="chk"></span><span class="dot" style="background:var(--frnd)"></span><span class="lbl">Forces amies</span><span class="cnt">{{ navires().length }}</span></div>
+            <div class="node on"><span class="chev">▸</span><span class="chk"></span><span class="dot" style="background:var(--hot)"></span><span class="lbl">Hostile / Suspect</span><span class="cnt">0</span></div>
+            <!-- TODO [BACKEND]: Ajouter un champ "affiliation" (ami/hostile/inconnu/neutre) au modèle Navire -->
+            <div class="node on"><span class="chev">▸</span><span class="chk"></span><span class="dot" style="background:var(--unk)"></span><span class="lbl">Inconnu / En attente</span><span class="cnt">0</span></div>
+            <div class="node on"><span class="chev">▸</span><span class="chk"></span><span class="dot" style="background:var(--neut)"></span><span class="lbl">Neutre / Civil</span><span class="cnt">0</span></div>
+          </div>
+          <div class="node on"><span class="chev">▾</span><span class="chk"></span><span class="lbl"><b>SUPERPOSITIONS</b></span></div>
+          <div class="child">
+            <div class="node on"><span class="chk"></span><span class="lbl">Carte nautique ENC</span></div>
+            <div class="node on"><span class="chk"></span><span class="lbl">Bathymétrie GEBCO</span></div>
+            <div class="node"><span class="chk"></span><span class="lbl">État de la mer OMM</span></div>
+            <div class="node on"><span class="chk"></span><span class="lbl">ZEE &amp; eaux territoriales</span></div>
+            <div class="node on"><span class="chk"></span><span class="lbl">Flux AIS commercial</span></div>
+          </div>
+          <div class="node on"><span class="chev">▸</span><span class="chk"></span><span class="lbl"><b>CAPTEURS &amp; LIAISONS</b></span></div>
+          <!-- TODO [BACKEND]: Endpoint GET /liaisons pour les liaisons de données actives -->
+          <div class="node"><span class="chev">▸</span><span class="chk"></span><span class="lbl"><b>ANNOTATIONS</b></span></div>
+        </div>
       </div>
     }
+
+    @if (activeLeftTab() === 'UNITS') {
+      <div class="pane-h">
+        <span>Ordre de bataille</span>
+        <span class="acts"><span title="Actualiser" (click)="rafraichir()">↺</span></span>
+      </div>
+      <div class="scroll">
+        <div class="unit-tree">
+
+          @for (groupe of groupes(); track groupe.id) {
+            @if (groupe.parent === null) {
+              <div class="groupe-racine">
+                <span class="dot" style="width:7px;height:7px;border-radius:50%;background:var(--frnd);flex:none"></span>
+                {{ groupe.nom }}
+                <button class="menu-btn" (click)="toggleMenu(groupe.id)">▼</button>
+                @if (menuOuvert() === groupe.id) {
+                  <div class="dropdown">
+                    <button (click)="renommerGroupe(groupe.id)">RENOMMER</button>
+                    <button (click)="supprimerGroupe(groupe.id)">SUPPRIMER</button>
+                  </div>
+                }
+              </div>
+
+              @for (sousGroupe of groupe.sousGroupes; track sousGroupe.id) {
+                <div class="sous-groupe">
+                  — {{ sousGroupe.nom }}
+                  <button class="menu-btn" (click)="toggleMenu(sousGroupe.id)">▼</button>
+                  @if (menuOuvert() === sousGroupe.id) {
+                    <div class="dropdown">
+                      <button (click)="renommerGroupe(sousGroupe.id)">RENOMMER</button>
+                      <button (click)="supprimerGroupe(sousGroupe.id)">SUPPRIMER</button>
+                    </div>
+                  }
+                </div>
+
+                @for (navire of sousGroupe.navires; track navire.id) {
+                  <div class="navire-item" [class.selected]="navireSelectionne()?.id === navire.id" (click)="selectionner(navire)">
+                    <span class="dot"></span>
+                    {{ navire.nom }}
+                    <button class="menu-btn" (click)="$event.stopPropagation(); toggleMenu(navire.id)">▼</button>
+                    @if (menuOuvert() === navire.id) {
+                      <div class="dropdown">
+                        <button (click)="renommerNavire(navire.id)">RENOMMER</button>
+                        <button (click)="supprimer(navire.id)">SUPPRIMER</button>
+                      </div>
+                    }
+                  </div>
+                }
+              }
+
+              @for (navire of groupe.navires; track navire.id) {
+                <div class="navire-item" [class.selected]="navireSelectionne()?.id === navire.id" (click)="selectionner(navire)">
+                  <span class="dot"></span>
+                  {{ navire.nom }}
+                  <button class="menu-btn" (click)="$event.stopPropagation(); toggleMenu(navire.id)">▼</button>
+                  @if (menuOuvert() === navire.id) {
+                    <div class="dropdown">
+                      <button (click)="deplacerNavire(navire)">DÉPLACER</button>
+                      <button (click)="renommerNavire(navire.id)">RENOMMER</button>
+                      <button (click)="supprimer(navire.id)">SUPPRIMER</button>
+                    </div>
+                  }
+                </div>
+              }
+            }
+          }
+
+          <div class="groupe-racine" style="color:var(--txt-mute)">SANS GROUPE</div>
+          @for (navire of navires(); track navire.id) {
+            @if (!navire.groupe) {
+              <div class="navire-item" [class.selected]="navireSelectionne()?.id === navire.id" (click)="selectionner(navire)">
+                <span class="dot" style="background:var(--txt-mute)"></span>
+                {{ navire.nom }}
+                <button class="menu-btn" (click)="$event.stopPropagation(); toggleMenu(navire.id)">▼</button>
+                @if (menuOuvert() === navire.id) {
+                  <div class="dropdown">
+                    <button (click)="renommerNavire(navire.id)">RENOMMER</button>
+                    <button (click)="supprimer(navire.id)">SUPPRIMER</button>
+                  </div>
+                }
+              </div>
+            }
+          }
+        </div>
+      </div>
+    }
+
+    @if (activeLeftTab() === 'PLANS') {
+      <div class="coming-soon">
+        <!-- TODO [BACKEND]: Endpoint GET /missions pour les plans et waypoints -->
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".4">
+          <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+        </svg>
+        <span>FONCTIONNALITÉ À VENIR</span>
+        <span style="font-size:10px;color:var(--txt-mute)">Gestion des plans de mission<br>et des waypoints</span>
+      </div>
+    }
+
+    <div class="filters">
+      <div class="row"><span>Affiliation</span></div>
+      <div class="chips">
+        <span class="chip frnd on">AMIS</span>
+        <span class="chip hot">HOST</span>
+        <span class="chip unk">INC</span>
+        <span class="chip neut">NEUT</span>
+      </div>
+      <div class="row" style="margin-top:8px"><span>Domaine</span></div>
+      <div class="chips">
+        <span class="chip on">SURF</span>
+        <span class="chip on">AIR</span>
+        <span class="chip on">SUB</span>
+        <span class="chip">TERRE</span>
+      </div>
+      <div class="row" style="margin-top:8px;color:var(--txt-mute);font-size:10px">
+        <span>Affichage <b style="color:var(--txt)">{{ navires().length }}</b> unités</span>
+      </div>
+    </div>
   </div>
 
-  <!-- CARTE -->
   <div class="map-area">
     <div id="map"></div>
 
-    <!-- FORMULAIRE AJOUT -->
+    <div class="map-tabs">
+      <div class="t on">SURFACE</div>
+      <div class="t">AIR</div>
+      <div class="t">SUB</div>
+      <div class="t">ÉLECTRONIQUE</div>
+      <div class="t">COP FUSIONNÉE</div>
+      <div class="spacer"></div>
+      <div class="meta">
+        <span>PROJ <b>Mercator</b></span>
+        <span>·</span>
+        <span>DATUM <b>WGS-84</b></span>
+        <span>·</span>
+        <span>UNITÉS <b>NM / KT</b></span>
+      </div>
+    </div>
+
+    <div class="compass">
+      <div class="n">N</div>
+      <div class="e">E</div>
+      <div class="s">S</div>
+      <div class="w">W</div>
+      <div class="arrow"></div>
+    </div>
+
     @if (afficherFormulaire()) {
       <div class="form-overlay">
-        <h2 style="font-size:12px; letter-spacing:3px">NOUVELLE UNITE</h2>
-        <input [(ngModel)]="nouveauNavire.nom" placeholder="NOM">
-        <input [(ngModel)]="nouveauNavire.type" placeholder="TYPE">
-        <input [(ngModel)]="nouveauNavire.latitude" placeholder="LATITUDE" type="number">
-        <input [(ngModel)]="nouveauNavire.longitude" placeholder="LONGITUDE" type="number">
-        <input [(ngModel)]="nouveauNavire.statut" placeholder="STATUT">
-        <div style="display:flex; gap:8px;"> <button (click)="ajouter()">CONFIRMER</button>  <button (click)="toggleFormulaire()">SUPPRIMER</button> </div>
-
+        <h3>Nouvelle unité</h3>
+        <input [(ngModel)]="nouveauNavire.nom" placeholder="NOM" />
+        <select [(ngModel)]="nouveauNavire.type">
+          <option value="" disabled selected>TYPE</option>
+          <option value="fregate">Frégate</option>
+          <option value="sous-marin">Sous-marin</option>
+          <option value="drone">Drone</option>
+          <option value="porte-avions">Porte-avions</option>
+          <option value="corvette">Corvette</option>
+          <option value="patrouilleur">Patrouilleur</option>
+        </select>
+        <input [(ngModel)]="nouveauNavire.latitude" placeholder="LATITUDE" type="number" step="0.0001" />
+        <input [(ngModel)]="nouveauNavire.longitude" placeholder="LONGITUDE" type="number" step="0.0001" />
+        <select [(ngModel)]="nouveauNavire.statut">
+          <option value="" disabled selected>STATUT</option>
+          <option value="en-mer">En mer</option>
+          <option value="en-mission">En mission</option>
+          <option value="en-alerte">En alerte</option>
+          <option value="au-port">Au port</option>
+        </select>
+        <select [(ngModel)]="nouveauNavire.groupe">
+          <option value="">SANS GROUPE</option>
+          @for (groupe of groupes(); track groupe.id) {
+            @if (groupe.parent === null) {
+              <option [value]="groupe.id">{{ groupe.nom }}</option>
+              @for (sg of groupe.sousGroupes; track sg.id) {
+                <option [value]="sg.id">  └ {{ sg.nom }}</option>
+              }
+            }
+          }
+        </select>
+        @if (erreurFormulaire()) {
+          <div style="color:#d87878;font-size:10px;font-family:'IBM Plex Mono',monospace;border:1px solid #5a2020;background:#1a0a0a;padding:5px 8px;">
+            ⚠ {{ erreurFormulaire() }}
+          </div>
+        }
+        <div class="form-actions">
+          <button class="btn-confirm" (click)="ajouter()">CONFIRMER</button>
+          <button class="btn-cancel" (click)="toggleFormulaire()">ANNULER</button>
+        </div>
       </div>
     }
+
+    @if (afficherFormulaireGroupe()) {
+      <div class="form-overlay">
+        <h3>Nouveau groupe</h3>
+        <input [(ngModel)]="nouveauGroupe.nom" placeholder="NOM DU GROUPE" />
+        <select [(ngModel)]="nouveauGroupe.parent">
+          <option value="">GROUPE RACINE</option>
+          @for (groupe of groupes(); track groupe.id) {
+            @if (groupe.parent === null) {
+              <option [value]="groupe.id">{{ groupe.nom }}</option>
+            }
+          }
+        </select>
+        <div class="form-actions">
+          <button class="btn-confirm" (click)="ajouterGroupe()">CRÉER</button>
+          <button class="btn-cancel" (click)="toggleFormulaireGroupe()">ANNULER</button>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="right">
+    <div class="pane-tabs">
+      <div class="t" [class.on]="activeRightTab() === 'SELECTED'" (click)="setRightTab('SELECTED')">SÉLECTION</div>
+      <div class="t" [class.on]="activeRightTab() === 'SENSORS'" (click)="setRightTab('SENSORS')">CAPTEURS</div>
+      <div class="t" [class.on]="activeRightTab() === 'COMMS'" (click)="setRightTab('COMMS')">COMMS</div>
+      <div class="t" [class.on]="activeRightTab() === 'LOG'" (click)="setRightTab('LOG')">LOG</div>
+    </div>
+
+    @if (activeRightTab() === 'SELECTED') {
+      @if (navireSelectionne(); as nav) {
+        <div class="unit-head">
+          <div class="top">
+            <div class="sym">
+              <img [src]="getSymbolDataURL(nav.type)" [alt]="nav.type" />
+            </div>
+            <div style="flex:1">
+              <div class="nm">{{ nav.nom }}</div>
+              <div class="desig">{{ nav.type | uppercase }} · {{ getGroupeLabel(nav.groupe) }}</div>
+            </div>
+            <div style="text-align:right;flex:none">
+              <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--txt-mute)">Track ID</div>
+              <div style="font-family:'IBM Plex Mono',monospace;color:var(--txt);font-size:11px">{{ nav.id.slice(0,8) }}…</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="kv">
+          <div class="cell"><div class="k">Latitude</div><div class="v">{{ nav.latitude.toFixed(4) }}°N</div></div>
+          <div class="cell"><div class="k">Longitude</div><div class="v">{{ nav.longitude.toFixed(4) }}°E</div></div>
+          <div class="cell"><div class="k">Type</div><div class="v">{{ nav.type }}</div></div>
+          <div class="cell"><div class="k">Statut</div><div class="v"><span class="statut-badge" [class]="getStatutClass(nav.statut)">{{ nav.statut || '—' }}</span></div></div>
+        </div>
+
+        <div class="section">
+          <div class="h"><span>Appartenance</span></div>
+          <div class="body">Groupe : <b>{{ getGroupeLabel(nav.groupe) }}</b></div>
+        </div>
+
+        <!-- TODO [BACKEND]: Endpoint GET /navires/{id}/mission pour la mission et les waypoints -->
+        <div class="section">
+          <div class="h"><span>Mission</span><span class="meta">— non configuré —</span></div>
+          <div class="body" style="color:var(--txt-mute);font-size:10.5px">
+            Aucune mission assignée.<br>
+            <span style="font-size:10px">Implémenter : POST /navires/&#123;id&#125;/mission</span>
+          </div>
+        </div>
+
+        <!-- TODO [BACKEND]: Endpoint GET /navires/{id}/capteurs pour l'état des capteurs -->
+        <div class="section">
+          <div class="h"><span>Capteurs</span><span class="meta">— non disponible —</span></div>
+          <div class="body" style="color:var(--txt-mute);font-size:10.5px">
+            <span style="font-size:10px">Implémenter : GET /navires/&#123;id&#125;/capteurs</span>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="h"><span>Actions</span></div>
+          <div class="body" style="display:flex;gap:6px;padding:8px 12px">
+            <button class="btn" style="flex:1" (click)="deplacerNavire(nav)">DÉPLACER</button>
+            <button class="btn" style="flex:1" (click)="renommerNavire(nav.id)">RENOMMER</button>
+            <button class="btn danger" style="flex:1" (click)="supprimerSelectionne()">SUPPRIMER</button>
+          </div>
+        </div>
+
+      } @else {
+        <div class="no-selection">
+          <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+          </svg>
+          <span>AUCUNE UNITÉ SÉLECTIONNÉE</span>
+          <span style="font-size:10px;color:var(--txt-mute)">Cliquez sur une unité dans la carte<br>ou dans le panneau UNITÉS</span>
+        </div>
+      }
+    }
+
+    @if (activeRightTab() === 'SENSORS') {
+      <!-- TODO [BACKEND]: Endpoint GET /navires/{id}/capteurs — état des capteurs par unité -->
+      <div class="coming-soon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".4">
+          <circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M4.93 4.93a10 10 0 0 0 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07M8.46 8.46a5 5 0 0 0 0 7.07"/>
+        </svg>
+        <span>ÉTAT DES CAPTEURS</span>
+        <span style="font-size:10px;color:var(--txt-mute)">TODO : GET /navires/&#123;id&#125;/capteurs</span>
+      </div>
+    }
+
+    @if (activeRightTab() === 'COMMS') {
+      <!-- TODO [BACKEND]: Endpoint GET /navires/{id}/liaisons — liaisons de données -->
+      <div class="coming-soon">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" opacity=".4">
+          <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+        </svg>
+        <span>LIAISONS DE DONNÉES</span>
+        <span style="font-size:10px;color:var(--txt-mute)">TODO : GET /navires/&#123;id&#125;/liaisons</span>
+      </div>
+    }
+
+    @if (activeRightTab() === 'LOG') {
+      <!-- TODO [BACKEND]: Endpoint GET /navires/{id}/evenements — journal des événements -->
+      @if (navireSelectionne(); as nav) {
+        <div class="pane-h"><span>Événements — {{ nav.nom }}</span></div>
+        <div class="event-log">
+          <div class="entry"><span class="ts">{{ clockStr() }}</span> [SYS] Unité sélectionnée : <b style="color:var(--txt)">{{ nav.nom }}</b></div>
+          <div class="entry" style="color:var(--txt-mute);margin-top:8px;font-size:10px">
+            — Journal non disponible —<br>
+            Implémenter : GET /navires/&#123;id&#125;/evenements
+          </div>
+        </div>
+      } @else {
+        <div class="no-selection"><span>AUCUNE UNITÉ SÉLECTIONNÉE</span></div>
+      }
+    }
+  </div>
+
+  <div class="status">
+    <div class="seg"><span>Système <b>Nominal</b></span></div>
+    <div class="seg"><span>WS <b [style.color]="wsConnecte() ? 'var(--frnd)' : 'var(--hot)'">{{ wsConnecte() ? 'CONNECTÉ' : 'DÉCONNECTÉ' }}</b></span></div>
+    <div class="seg"><span>Unités <b>{{ navires().length }}</b></span></div>
+    <div class="seg"><span>Groupes <b>{{ groupes().length }}</b></span></div>
+    <div class="seg"><span>En mission <b>{{ compterParStatut('en-mission') }}</b></span></div>
+    <div class="seg"><span>En alerte <b style="color:var(--hot)">{{ compterParStatut('en-alerte') }}</b></span></div>
+    <div class="seg"><span>En mer <b style="color:var(--frnd)">{{ compterParStatut('en-mer') }}</b></span></div>
+    <div class="spacer"></div>
+    <div class="seg"><span>Session <b class="mono">{{ sessionTimeStr() }}</b></span></div>
+    <div class="seg last"><span class="mono" style="color:var(--txt-mute)">NAVAL COP v1.0</span></div>
   </div>
 
 </div>

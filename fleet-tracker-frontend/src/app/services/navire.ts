@@ -8,6 +8,7 @@ export interface Navire {
   type: string;
   latitude: number;
   longitude: number;
+  groupe: string
   statut: string;
 }
 
@@ -16,6 +17,7 @@ export interface NavireRequest {
     type: string;
     latitude: number;
     longitude: number;
+    groupe: string | null;
     statut: string;
 }
 
@@ -38,6 +40,11 @@ export class NavireService {
 
   supprimer(id: string): Observable<string> {
     return this.http.delete(`${this.apiUrl}/${id}`, { responseType: 'text'});
+  }
+
+  // TODO [BACKEND]: Implémenter PUT /navires/{id} { latitude, longitude } pour le déplacement
+  deplacer(id: string, latitude: number, longitude: number): Observable<Navire> {
+    return this.http.put<Navire>(`${this.apiUrl}/${id}`, { latitude, longitude });
   }
   
   connecterWebSocket(callback: (navire: Navire) => void): void {
